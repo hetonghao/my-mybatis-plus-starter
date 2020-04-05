@@ -41,6 +41,7 @@
     </resultMap>
     <sql id="condition">
         <if test="vo != null">
+        <#if cfg.isGenerateAllDefaultCondition>
         <#list table.fields as field>
             <#if field.propertyType=='String'>
             <if test="vo.${field.propertyName} !=null and vo.${field.propertyName} !=''">
@@ -51,6 +52,7 @@
             </#if>
             </if>
         </#list>
+        </#if>
         </if>
     </sql>
     <select id="page" resultMap="bo">
