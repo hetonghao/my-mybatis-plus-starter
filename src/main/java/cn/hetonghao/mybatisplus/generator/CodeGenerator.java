@@ -24,10 +24,10 @@ import java.util.Map;
 import java.util.Scanner;
 
 /**
- * 业务代码生成配置
+ * 业务代码生成器
  *
- * @Author: HeTongHao
- * @Date: 2019-06-23 17:02
+ * @author HeTongHao
+ * @since 2020/4/6 12:00
  */
 public class CodeGenerator {
     /**
@@ -38,10 +38,6 @@ public class CodeGenerator {
     private static final String USER_NAME = "postgres";
     private static final String PASSWORD = "Thinker@2019";
 
-    /**
-     * 生成在那个子项目下
-     */
-    private static final String SUB_PROJECT = "";
     /**
      * 生成在哪个包下
      */
@@ -67,35 +63,61 @@ public class CodeGenerator {
      * @param args
      */
     public static void main(String[] args) {
-        // 代码生成器
-        AutoGenerator mpg = new AutoGenerator();
-        // 全局配置
         GlobalConfig gc = new GlobalConfig()
                 //id类型，数据库自增
                 .setIdType(IdType.AUTO)
                 //文件覆盖
                 .setFileOverride(true)
-                .setOutputDir(System.getProperty("user.dir") + SUB_PROJECT + "/src/main/java")
+                .setOutputDir(getCurrentProjectPath() + "/src/main/java")
                 .setAuthor(AUTHOR)
+                //生成完是否打开文件夹
                 .setOpen(false)
                 //实体属性 Swagger2 注解
                 .setSwagger2(true);
-        mpg.setGlobalConfig(gc);
-        // 数据源配置
-        mpg.setDataSource(dataSourceConfig());
-        // 包配置
+        System.out.println("路径\t\t" + gc.getOutputDir());
+        System.out.println("包\t\t" + PARENT_PACKAGE_NAME);
         PackageConfig pc = new PackageConfig()
                 .setModuleName(scanner("模块名"))
                 .setParent(PARENT_PACKAGE_NAME)
                 .setXml("mapper");
-        mpg.setPackageInfo(pc);
-        //自定义配置
-        mpg.setCfg(getInjectionConfig(gc, pc));
+        // 代码生成器
+        AutoGenerator mpg = new AutoGenerator()
+                // 全局配置
+                .setGlobalConfig(gc)
+                // 包配置
+                .setPackageInfo(pc)
+                // 数据源配置
+                .setDataSource(dataSourceConfig())
+                // 策略配置
+                .setStrategy(getStrategyConfig(pc))
+                // 自定义配置
+                .setCfg(getInjectionConfig(gc, pc))
+                // 配置模板
+                .setTemplate(initTemplateConfig())
+                // 使用Freemarker模板引擎生成
+                .setTemplateEngine(new FreemarkerTemplateEngine());
+        mpg.execute();
+    }
 
-        // 配置模板
-        mpg.setTemplate(initTemplateConfig(pc, gc));
-        // 策略配置
-        StrategyConfig strategy = new StrategyConfig()
+    /**
+     * 获取当前项目路径
+     *
+     * @return
+     */
+    private static String getCurrentProjectPath() {
+        String userDir = System.getProperty("user.dir");
+        String modelPath = System.getProperty("java.class.path").replaceFirst("/target/.*$", "");
+        return userDir.equals(modelPath) ? userDir : modelPath;
+    }
+
+    /**
+     * 策略配置
+     *
+     * @param pc
+     * @return
+     */
+    private static StrategyConfig getStrategyConfig(PackageConfig pc) {
+        return new StrategyConfig()
                 .setNaming(NamingStrategy.underline_to_camel)
                 .setColumnNaming(NamingStrategy.underline_to_camel)
                 .setEntityLombokModel(true)
@@ -103,21 +125,21 @@ public class CodeGenerator {
                 .setInclude(scanner("表名，多个英文逗号分割").split(","))
                 .setControllerMappingHyphenStyle(true)
                 .setTablePrefix(pc.getModuleName() + "_")
+                //逻辑删除字段
                 .setLogicDeleteFieldName("deleted")
+                //乐观锁字段
                 .setVersionFieldName("version")
+                //自动填充字段
                 .setTableFillList(Lists.newArrayList(
                         new TableFill("create_time", FieldFill.INSERT)
                         , new TableFill("update_time", FieldFill.INSERT_UPDATE)));
-        mpg.setStrategy(strategy);
-
-        mpg.setTemplateEngine(new FreemarkerTemplateEngine());
-        mpg.execute();
     }
 
     /**
-     * <p>
      * 读取控制台内容
-     * </p>
+     *
+     * @param tip
+     * @return
      */
     public static String scanner(String tip) {
         Scanner scanner = new Scanner(System.in);
@@ -187,16 +209,6 @@ public class CodeGenerator {
             }
         };
         cfg.setFileOutConfigList(focList);
-        /*
-        cfg.setFileCreate(new IFileCreate() {
-            @Override
-            public boolean isCreate(ConfigBuilder configBuilder, FileType fileType, String filePath) {
-                // 判断自定义文件夹是否需要创建
-                checkDir("调用默认方法创建的目录");
-                return false;
-            }
-        });
-        */
         return cfg;
     }
 
@@ -217,8 +229,6 @@ public class CodeGenerator {
                         return DbColumnType.INTEGER;
                     } else if (t.contains("date") || t.contains("time") || t.contains("year")) {
                         return DbColumnType.LOCAL_DATE_TIME;
-                    } else if (t.contains("text")) {
-                        return DbColumnType.STRING;
                     } else if (t.contains("bit") || t.contains("bool")) {
                         return DbColumnType.BOOLEAN;
                     } else if (t.contains("decimal") || t.contains("numeric")) {
@@ -243,22 +253,12 @@ public class CodeGenerator {
     /**
      * 根据自己的需要，修改哪些包下面的 要覆盖还是不覆盖
      *
-     * @param packageConfig
-     * @param globalConfig
      * @return
      */
-    private static TemplateConfig initTemplateConfig(PackageConfig packageConfig, GlobalConfig globalConfig) {
+    private static TemplateConfig initTemplateConfig() {
         //配置自定义输出模板
         //指定自定义模板路径，注意不要带上.ftl/.vm, 会根据使用的模板引擎自动识别
         TemplateConfig templateConfig = new TemplateConfig();
-//        List<String> baseDir = Arrays.asList(
-//                packageConfig.getEntity(),
-//                packageConfig.getController(),
-//                packageConfig.getService(),
-//                packageConfig.getServiceImpl(),
-//                packageConfig.getMapper(),
-//                packageConfig.getXml()
-//        );
         //不是第一次生成，则不生成以下类
         if (!isInitCodeGenerator) {
             templateConfig.setController(null);
