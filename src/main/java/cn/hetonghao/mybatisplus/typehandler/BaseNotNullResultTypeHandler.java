@@ -1,4 +1,4 @@
-package cn.hetonghao.mybatisplus.mybatisplus.typehandler;
+package cn.hetonghao.mybatisplus.typehandler;
 
 import org.apache.ibatis.executor.result.ResultMapException;
 import org.apache.ibatis.type.BaseTypeHandler;

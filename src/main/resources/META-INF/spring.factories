@@ -1,4 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-cn.hetonghao.mybatisplus.start.MybatisPlusConfig,\
-cn.hetonghao.mybatisplus.redis.RedisKeyExpiredListener,\
-cn.hetonghao.mybatisplus.redis.RedisConfig
+cn.hetonghao.mybatisplus.start.MybatisPlusConfig

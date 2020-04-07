@@ -1,4 +1,4 @@
-package cn.hetonghao.mybatisplus.mybatisplus.typehandler;
+package cn.hetonghao.mybatisplus.typehandler;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;

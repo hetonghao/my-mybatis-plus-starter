@@ -1,22 +1,21 @@
-package cn.hetonghao.mybatisplus.mybatisplus.interceptors;
+package cn.hetonghao.mybatisplus.interceptors;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.plugin.*;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
-import cn.hetonghao.mybatisplus.utils.RedisUtils;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -34,9 +33,8 @@ import java.util.stream.Collectors;
         args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class}
 )})
 @Slf4j
-@AllArgsConstructor
 public class PageHandlerInterceptor implements Interceptor {
-    private RedisUtils redisUtils;
+    private Map<String, Long> cacheTotalMap = new ConcurrentHashMap<>();
 
     private IPage getPage(Object params) {
         if (params instanceof IPage) {
@@ -93,15 +91,15 @@ public class PageHandlerInterceptor implements Interceptor {
         //缓存total，解决mybatis引入缓存后total为0的问题
         String pageTotalKey;
         try {
-            pageTotalKey = "page-total-" + ((MappedStatement) args[0]).getId() + JSON.toJSONString(queryConditions(params));
+            pageTotalKey = ((MappedStatement) args[0]).getId() + JSON.toJSONString(queryConditions(params));
         } catch (ClassCastException e) {
             log.error("分页total缓存处理异常，请优化代码");
             return;
         }
-        if (!page.getRecords().isEmpty() && page.getTotal() == 0 && redisUtils.exists(pageTotalKey)) {
-            page.setTotal(Integer.parseInt(redisUtils.get(pageTotalKey)));
+        if (!page.getRecords().isEmpty() && page.getTotal() == 0 && cacheTotalMap.containsKey(pageTotalKey)) {
+            page.setTotal(cacheTotalMap.get(pageTotalKey));
         } else {
-            redisUtils.set(pageTotalKey, page.getTotal());
+            cacheTotalMap.put(pageTotalKey, page.getTotal());
         }
     }
 

@@ -1,6 +1,6 @@
 package cn.hetonghao.mybatisplus.generator;
 
-import cn.hetonghao.mybatisplus.request.PageVO;
+import cn.hetonghao.mybatisplus.vo.PageVO;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.core.exceptions.MybatisPlusException;
@@ -208,8 +208,7 @@ public class CodeGenerator {
                 this.setMap(map);
             }
         };
-        cfg.setFileOutConfigList(focList);
-        return cfg;
+        return cfg.setFileOutConfigList(focList);
     }
 
     /**

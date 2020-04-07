@@ -1,8 +1,6 @@
 package cn.hetonghao.mybatisplus.start;
 
-import cn.hetonghao.mybatisplus.mybatisplus.MyMetaObjectHandler;
-import cn.hetonghao.mybatisplus.mybatisplus.interceptors.PageHandlerInterceptor;
-import cn.hetonghao.mybatisplus.utils.RedisUtils;
+import cn.hetonghao.mybatisplus.MyMetaObjectHandler;
 import com.baomidou.mybatisplus.extension.plugins.OptimisticLockerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import org.mybatis.spring.annotation.MapperScan;
@@ -10,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import cn.hetonghao.mybatisplus.interceptors.PageHandlerInterceptor;
 
 /**
  * MybatisPlus 配置文件
@@ -19,7 +18,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @Configuration
 @EnableTransactionManagement
-@MapperScan("vc.thinker.**.mapper")
+@MapperScan("**.mapper")
 public class MybatisPlusConfig {
 
     /**
@@ -34,8 +33,8 @@ public class MybatisPlusConfig {
      * 分页插件优化拦截器
      */
     @Bean
-    public PageHandlerInterceptor pageHandlerInterceptor(@Autowired RedisUtils redisUtils) {
-        return new PageHandlerInterceptor(redisUtils);
+    public PageHandlerInterceptor pageHandlerInterceptor() {
+        return new PageHandlerInterceptor();
     }
 
     /**
