@@ -32,6 +32,11 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
     public List<${cfg.BOName}> page(IPage page, ${cfg.pageVOName} vo) {
         return baseMapper.page(page, vo);
     }
+
+    @Override
+    public Integer countByVO(${cfg.pageVOName} vo) {
+        return baseMapper.countByVO(vo);
+    }
 	
     @Override
     public ${cfg.BOName} findDetail(Long id) {

@@ -2,6 +2,7 @@ package ${cfg.voPackage};
 
 <#if swagger2>
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 </#if>
 <#if entityLombokModel>
 import lombok.Data;
@@ -56,6 +57,14 @@ public class ${cfg.pageVOName} {
         </#if>
     </#if>
     private ${field.propertyType} ${field.propertyName};
+    <#if field.propertyType=='Date' || field.propertyType=='LocalDateTime'>
+
+    @ApiModelProperty(value = "筛选起始:${field.comment}")
+    private ${field.propertyType} start${field.propertyName?cap_first};
+
+    @ApiModelProperty(value = "筛选结束:${field.comment}")
+    private ${field.propertyType} end${field.propertyName?cap_first};
+    </#if>
 </#list>
 <#------------  END 字段循环遍历  ---------->
 }

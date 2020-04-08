@@ -31,14 +31,21 @@ public interface ${table.serviceName} extends ${superServiceClass}<${entity}> {
     List<${cfg.BOName}> page(IPage page, ${cfg.pageVOName} vo);
 
     /**
+     * 根据VO统计数量
+     *
+     * @param vo
+     * @return
+     */
+    Integer countByVO(${cfg.pageVOName} vo);
+
+    /**
      * 根据id查询详情
      *
      * @param id
      * @return
      */
     ${cfg.BOName} findDetail(Long id);
-    
-    
+
      /**
      * 根据id删除,逻辑处理
      *
@@ -46,6 +53,7 @@ public interface ${table.serviceName} extends ${superServiceClass}<${entity}> {
      * @return
      */
     boolean delete(Long id);
+
     /**
      * 保存,逻辑处理
      *

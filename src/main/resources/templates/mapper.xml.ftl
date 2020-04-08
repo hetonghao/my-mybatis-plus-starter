@@ -51,6 +51,14 @@
                 and base.${field.name} = <#noparse>#</#noparse>{vo.${field.propertyName}}
             </#if>
             </if>
+            <#if field.propertyType=='Date' || field.propertyType=='LocalDateTime'>
+            <if test="vo.start${field.propertyName?cap_first} !=null">
+                and base.${field.name} >= <#noparse>#</#noparse>{vo.start${field.propertyName?cap_first}}
+            </if>
+            <if test="vo.end${field.propertyName?cap_first} !=null">
+                and base.${field.name} &lt;= <#noparse>#</#noparse>{vo.end${field.propertyName?cap_first}}
+            </if>
+            </#if>
         </#list>
         </#if>
         </if>
