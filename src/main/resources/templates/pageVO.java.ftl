@@ -59,10 +59,10 @@ public class ${cfg.pageVOName} {
     private ${field.propertyType} ${field.propertyName};
     <#if field.propertyType=='Date' || field.propertyType=='LocalDateTime'>
 
-    @ApiModelProperty(value = "筛选起始:${field.comment}")
+    @ApiModelProperty(value = "筛选起始:${field.comment!''}")
     private ${field.propertyType} start${field.propertyName?cap_first};
 
-    @ApiModelProperty(value = "筛选结束:${field.comment}")
+    @ApiModelProperty(value = "筛选结束:${field.comment!''}")
     private ${field.propertyType} end${field.propertyName?cap_first};
     </#if>
 </#list>

@@ -106,7 +106,9 @@ public class CodeGenerator {
      */
     private static String getCurrentProjectPath() {
         String userDir = System.getProperty("user.dir");
-        String modelPath = System.getProperty("java.class.path").replaceFirst("/target/.*$", "");
+        String modelPath = CodeGenerator.class.getResource("/").toString()
+                .replaceFirst("file:", "")
+                .replaceFirst("/target/.*$", "");
         return userDir.equals(modelPath) ? userDir : modelPath;
     }
 
